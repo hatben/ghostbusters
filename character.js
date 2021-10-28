@@ -11,7 +11,7 @@ const FIRE_WIGGLE_OFFSET = 2;
 class Character {
     x;
     y;
-    direction = 1;
+    direction = 1; // left = 0, right = 1
     firing = 0;
 
     constructor(x, y) {
@@ -47,6 +47,54 @@ class Character {
         } else {
             this.firing = 0;
         }
+    }
+
+    checkColliding(ghosts) {
+        const colliding = [];
+        let ghostsInFront;
+        if (this.direction === 0) {
+            ghostsInFront = ghosts.filter(ghost => ghost.x < this.x - CHARACTER_WIDTH);
+        } else {
+            ghostsInFront = ghosts.filter(ghost => ghost.x > this.x);
+        }
+
+        for (let p = 0; p < this.firing && ghostsInFront.length > 0; p += 10) {
+            for (let g = ghostsInFront.length - 1; g >= 0; g--) {
+                const ghost = ghostsInFront[g];
+                if (this.ghostCollidesWithPoint(ghost, p)) {
+                    colliding.push({
+                        id: ghost.id,
+                        point: p,
+                    });
+                    ghostsInFront.splice(g, 1);
+                }
+            }
+        }
+
+        return colliding;
+    }
+
+    ghostCollidesWithPoint(ghost, p) {
+        let px, py;
+        if (this.direction === 0) {
+            px = this.x - p;
+            py = this.y - p;
+        } else {
+            px = this.x + p + CHARACTER_WIDTH;
+            py = this.y - p;
+        }
+
+        // rough debugging hitboxes
+        // push();
+        // fill(255, 0, 0);
+        // rect(px-20, py-20, 20, 20);
+        // rect(ghost.x, ghost.y, GHOST_WIDTH, GHOST_HEIGHT);
+        // pop();
+
+        return px > ghost.x
+            && px < ghost.x + GHOST_WIDTH
+            && py > ghost.y
+            && py < ghost.y + GHOST_HEIGHT;
     }
 
     draw() {

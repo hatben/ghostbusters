@@ -5,7 +5,7 @@ let playerSpriteL;
 let playerSpriteR;
 let ghostSprite;
 
-const PLAYER_START_X = 50;
+const PLAYER_START_X = 250;
 const PLAYER_START_Y = 450;
 
 function preload() {
@@ -23,6 +23,8 @@ function setup() {
     this.ghosts = [];
 
     this.ghosts.push(new Ghost(30, 30));
+    this.ghosts.push(new Ghost(120, 30));
+    this.ghosts.push(new Ghost(350, 30));
 }
 
 function draw() {
@@ -44,9 +46,11 @@ function drawGround() {
 }
 
 function tick() {
+    const collidingGhosts = this.character.checkColliding(this.ghosts);
+
     this.character.update();
     this.ghosts.forEach(ghost => {
-        ghost.update();
+        ghost.update(collidingGhosts);
     });
 }
 
