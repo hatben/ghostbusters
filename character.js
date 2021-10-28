@@ -1,8 +1,12 @@
 const CHARACTER_WIDTH = 42;
 const CHARACTER_HEIGHT = 60;
 
-const FIRE_RATE = 3;
-const FIRE_MAX_LENGTH = 300;
+const CHAR_MOVEMENT_SPEED = 5;
+
+const FIRE_RATE = 5;
+const FIRE_MAX_LENGTH = 350;
+
+const FIRE_WIGGLE_OFFSET = 2;
 
 class Character {
     x;
@@ -21,12 +25,12 @@ class Character {
             if (this.firing === 0) {
                 this.direction = 0
             }
-            this.x -= 5;
+            this.x -= CHAR_MOVEMENT_SPEED;
         } else {
             if (this.firing === 0) {
                 this.direction = 1;
             }
-            this.x += 5;
+            this.x += CHAR_MOVEMENT_SPEED;
         }
     }
 
@@ -53,10 +57,12 @@ class Character {
             this.direction === 0 ? playerSpriteL : playerSpriteR,
             this.x, this.y, CHARACTER_WIDTH, CHARACTER_HEIGHT
         );
-        this.drawFuzzyLine();
+        if (this.firing !== 0) {
+            this.drawStream();
+        }
     }
 
-    drawFuzzyLine() {
+    drawStream() {
         for (let p = 0; p < this.firing; p++) {
             let px, py;
             if (this.direction === 0) {
@@ -67,8 +73,8 @@ class Character {
                 py = this.y - p;
             }
             const [xOff, yOff] = this.calcOffset();
-            px += xOff;
-            py += yOff;
+            px += xOff * FIRE_WIGGLE_OFFSET;
+            py += yOff * FIRE_WIGGLE_OFFSET;
             point(px, py);
         }
     }
